@@ -72,8 +72,18 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		Comparable<? super K> k = (Comparable<? super K>) target;
 		
 		// the actual search
-        // TODO: Fill this in.
-        return null;
+        return auxFindNode(k, root);
+	}
+	
+	private Node auxFindNode(Comparable<? super K> key, Node n){
+		if(n == null)
+			return null;
+		if(key.compareTo(n.key) == 0)
+			return n;
+		if(key.compareTo(n.key) < 0)
+			return auxFindNode(key, n.left);
+		else
+			return auxFindNode(key, n.right);
 	}
 
 	/**
@@ -92,6 +102,11 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(Object target) {
+		for(K key: keySet()){
+			Object val = (Object) get((Object) key);
+			if(target.equals(val))
+				return true;
+		}
 		return false;
 	}
 
@@ -117,8 +132,17 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	@Override
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
-        // TODO: Fill this in.
+		inOrder(set,root);
 		return set;
+	}
+	
+	private void inOrder(Set<K> set, Node n){
+		if(n == null)
+			return;
+		inOrder(set, n.left);
+		set.add(n.key);
+		inOrder(set, n.right);
+		
 	}
 
 	@Override
@@ -131,12 +155,36 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 			size++;
 			return null;
 		}
+		if(containsKey(key)){
+			Node temp = findNode((Object) key);
+			findNode((Object)key).value = value;
+			return temp.value;
+		}
+		size++;
 		return putHelper(root, key, value);
 	}
 
 	private V putHelper(Node node, K key, V value) {
-        // TODO: Fill this in.
-        return null;
+        @SuppressWarnings("unchecked")
+		Comparable<? super K> k = (Comparable<? super K>) key;
+		
+		if(k.compareTo(node.key) < 0){
+			if(node.left == null){
+				node.left = new Node(key, value);
+				return value;
+			}else{
+				return putHelper(node.left, key, value);
+			}
+		}else{
+			if(node.right == null){
+				node.right = new Node(key, value);
+				return value;
+			}else{
+				return putHelper(node.right, key, value);
+			}
+				
+		}
+			
 	}
 
 	@Override
